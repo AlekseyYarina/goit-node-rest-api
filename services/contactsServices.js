@@ -44,3 +44,12 @@ export async function addContact(data) {
   await updateContacts(contacts);
   return newContact;
 }
+
+const contactsService = {
+  listContacts,
+  getContactById,
+  removeContact,
+  addContact,
+};
+
+export default contactsService;
