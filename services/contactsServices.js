@@ -45,11 +45,24 @@ export async function addContact(data) {
   return newContact;
 }
 
+export async function updateContact(contactId, newData) {
+  const contacts = await listContacts();
+  const index = contacts.findIndex((contact) => contact.id === contactId);
+  if (index === -1) {
+    return null;
+  }
+  const updatedContact = { ...contacts[index], ...newData };
+  contacts[index] = updatedContact;
+  await updateContacts(contacts);
+  return updatedContact;
+}
+
 const contactsService = {
   listContacts,
   getContactById,
   removeContact,
   addContact,
+  updateContact,
 };
 
 export default contactsService;
