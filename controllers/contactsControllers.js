@@ -12,8 +12,7 @@ const handleSuccess = (res, data, statusCode = 200) => {
 export const getAllContacts = async (req, res, next) => {
   try {
     const contacts = await contactsService.listContacts();
-    req.contacts = contacts;
-    next();
+    handleSuccess(res, contacts);
   } catch (error) {
     next(error);
   }
@@ -24,8 +23,7 @@ export const getOneContact = async (req, res, next) => {
     const { id } = req.params;
     const contact = await contactsService.getContactById(id);
     if (contact !== null) {
-      req.contact = contact;
-      next();
+      handleSuccess(res, { contact });
     } else {
       throw new HttpError(404, "Contact not found");
     }
@@ -39,8 +37,7 @@ export const deleteContact = async (req, res, next) => {
     const { id } = req.params;
     const deletedContact = await contactsService.removeContact(id);
     if (deletedContact) {
-      req.deletedContact = deletedContact;
-      next();
+      handleSuccess(res, { deletedContact });
     } else {
       throw new HttpError(404, "Contact not found");
     }
@@ -57,8 +54,7 @@ export const createContact = async (req, res, next) => {
     }
     const { name, email, phone } = value;
     const newContact = await contactsService.addContact({ name, email, phone });
-    req.newContact = newContact;
-    next();
+    handleSuccess(res, { newContact }, 201);
   } catch (error) {
     next(error);
   }
@@ -80,8 +76,7 @@ export const updateContact = async (req, res, next) => {
       email,
       phone,
     });
-    req.updatedContact = updatedContact;
-    next();
+    handleSuccess(res, { updatedContact });
   } catch (error) {
     next(error);
   }
