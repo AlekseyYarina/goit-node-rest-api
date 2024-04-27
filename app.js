@@ -1,4 +1,4 @@
-import express from "express";
+import express, { json } from "express";
 import morgan from "morgan";
 import cors from "cors";
 
@@ -9,8 +9,10 @@ const app = express();
 app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
+// export const jsonParser = express.json();
 
 app.use("/api/contacts", contactsRouter);
+// app.use("/api/contacts", contactsRouter(json));
 
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });
