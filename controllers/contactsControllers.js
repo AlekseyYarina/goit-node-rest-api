@@ -1,5 +1,6 @@
 import contactsService from "../services/contactsServices.js";
 import HttpError from "../helpers/HttpError.js";
+import { createContactSchema, updateContactSchema } from "./contactsSchemas.js";
 
 const handleSuccess = (res, data, statusCode = 200) => {
   res.status(statusCode).json(data);
@@ -51,10 +52,11 @@ export const deleteContact = async (req, res) => {
 
 export const createContact = async (req, res) => {
   try {
-    const { name, email, phone } = req.body;
-    if (!name || !email || !phone) {
-      throw new HttpError(400, "Body must have name, email, and phone fields");
+    const { error, value } = createContactSchema.validate(req.body);
+    if (error) {
+      throw new HttpError(400, error.details[0].message);
     }
+    const { name, email, phone } = value;
     const newContact = await contactsService.addContact({ name, email, phone });
     handleSuccess(res, newContact, 201);
   } catch (error) {
@@ -65,7 +67,11 @@ export const createContact = async (req, res) => {
 export const updateContact = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, phone } = req.body;
+    const { error, value } = updateContactSchema.validate(req.body);
+    if (error) {
+      throw new HttpError(400, error.details[0].message);
+    }
+    const { name, email, phone } = value;
     if (!name && !email && !phone) {
       throw new HttpError(400, "Body must have at least one field");
     }
