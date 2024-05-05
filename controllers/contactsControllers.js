@@ -49,6 +49,7 @@ export const getOneContact = async (req, res, next) => {
     const contact = await Contact.findById(id);
     if (contact !== null) {
       handleSuccess(res, { contact });
+      res.send(id);
     } else {
       throw HttpError(404, "Contact not found");
     }
@@ -57,15 +58,35 @@ export const getOneContact = async (req, res, next) => {
   }
 };
 
+// export const deleteContact = async (req, res, next) => {
+//   try {
+//     const { id } = req.params;
+//     const deletedContact = await contactsService.removeContact(id);
+//     if (deletedContact) {
+//       handleSuccess(res, { deletedContact });
+//     } else {
+//       throw HttpError(404, "Contact not found");
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 export const deleteContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const deletedContact = await contactsService.removeContact(id);
+    const deletedContact = await Contact.findByIdAndDelete(id);
     if (deletedContact) {
       handleSuccess(res, { deletedContact });
     } else {
-      throw HttpError(404, "Contact not found");
+      // throw HttpError(404, "Contact not found");
+      return res.status(404).send("Contact not found");
     }
+
+    // if (deletedContact === null) {
+    //   return res.status(404).send("Contact not found");
+    // }
+    // res.send({ id });
   } catch (error) {
     next(error);
   }
@@ -110,6 +131,25 @@ export const createContact = async (req, res, next) => {
   }
 };
 
+// export const updateContact = async (req, res, next) => {
+//   try {
+//     const { id } = req.params;
+//     const { error, value } = updateContactSchema.validate(req.body);
+//     if (error) {
+//       throw HttpError(400, error.message);
+//     }
+//     const { name, email, phone } = value;
+//     const updatedContact = await contactsService.updateContact(id, {
+//       name,
+//       email,
+//       phone,
+//     });
+//     handleSuccess(res, { updatedContact });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 export const updateContact = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -117,13 +157,21 @@ export const updateContact = async (req, res, next) => {
     if (error) {
       throw HttpError(400, error.message);
     }
-    const { name, email, phone } = value;
-    const updatedContact = await contactsService.updateContact(id, {
-      name,
-      email,
-      phone,
-    });
-    handleSuccess(res, { updatedContact });
+    const contact = {
+      name: value.name,
+      email: value.email,
+      phone: value.phone,
+      favorite: value.favorite,
+    };
+
+    try {
+      const result = await Contact.findByIdAndUpdate(id, contact, {
+        new: true,
+      });
+      res.status(201).send(result);
+    } catch (error) {
+      next(error);
+    }
   } catch (error) {
     next(error);
   }
