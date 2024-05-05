@@ -11,19 +11,42 @@ const handleSuccess = (res, data, statusCode = 200) => {
   res.status(statusCode).json(data);
 };
 
+// export const getAllContacts = async (req, res, next) => {
+//   try {
+//     const contacts = await contactsService.listContacts();
+//     handleSuccess(res, contacts);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 export const getAllContacts = async (req, res, next) => {
   try {
-    const contacts = await contactsService.listContacts();
-    handleSuccess(res, contacts);
+    const contacts = await Contact.find();
+    res.send(contacts);
   } catch (error) {
     next(error);
   }
 };
 
+// export const getOneContact = async (req, res, next) => {
+//   try {
+//     const { id } = req.params;
+//     const contact = await contactsService.getContactById(id);
+//     if (contact !== null) {
+//       handleSuccess(res, { contact });
+//     } else {
+//       throw HttpError(404, "Contact not found");
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 export const getOneContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const contact = await contactsService.getContactById(id);
+    const contact = await Contact.findById(id);
     if (contact !== null) {
       handleSuccess(res, { contact });
     } else {
