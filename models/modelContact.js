@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const contactSchema = mongoose.Schema(
+export const contactSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -20,4 +20,20 @@ const contactSchema = mongoose.Schema(
   { versionKey: false, timestamps: true }
 );
 
-export default mongoose.model("Contact", contactSchema);
+export const Contact = mongoose.model("Contact", contactSchema);
+
+export const contactStatusSchema = mongoose.Schema(
+  {
+    favorite: {
+      type: Boolean,
+      default: false,
+      required: [true],
+    },
+  },
+  { versionKey: false }
+);
+
+export const ContactStatus = mongoose.model(
+  "ContactStatus",
+  contactStatusSchema
+);
