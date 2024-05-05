@@ -7,7 +7,7 @@ async function run() {
     await mongoose.connect(DB_URI);
     console.info("Database connection successful");
   } finally {
-    await mongoose.disconnect();
+    // await mongoose.disconnect();
   }
 }
 run().catch((error) => {

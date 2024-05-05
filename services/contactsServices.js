@@ -12,6 +12,11 @@ async function updateContacts(contacts) {
   }
 }
 
+// export async function listContacts() {
+//   const data = await fs.readFile(contactsPath, "utf-8");
+//   return JSON.parse(data);
+// }
+
 export async function listContacts() {
   const data = await fs.readFile(contactsPath, "utf-8");
   return JSON.parse(data);
@@ -33,6 +38,17 @@ export async function removeContact(contactId) {
   await updateContacts(contacts);
   return result;
 }
+
+// export async function addContact(data) {
+//   const contacts = await listContacts();
+//   const newContact = {
+//     id: nanoid(),
+//     ...data,
+//   };
+//   contacts.push(newContact);
+//   await updateContacts(contacts);
+//   return newContact;
+// }
 
 export async function addContact(data) {
   const contacts = await listContacts();
