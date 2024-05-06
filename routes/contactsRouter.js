@@ -38,7 +38,7 @@ contactsRouter.put(
 );
 
 contactsRouter.put(
-  "/:contactId/favorite",
+  "/:id/favorite",
   jsonParser,
   validateBody(updateStatusContactShema),
   updateStatusContact

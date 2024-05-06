@@ -21,19 +21,3 @@ export const contactSchema = mongoose.Schema(
 );
 
 export const Contact = mongoose.model("Contact", contactSchema);
-
-export const contactStatusSchema = mongoose.Schema(
-  {
-    favorite: {
-      type: Boolean,
-      default: false,
-      required: [true],
-    },
-  },
-  { versionKey: false }
-);
-
-export const ContactStatus = mongoose.model(
-  "ContactStatus",
-  contactStatusSchema
-);
