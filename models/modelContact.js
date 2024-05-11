@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export const contactSchema = mongoose.Schema(
+const contactSchema = mongoose.Schema(
   {
     name: {
       type: String,
