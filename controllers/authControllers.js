@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 import User from "../models/modelUser.js";
 
@@ -45,7 +46,13 @@ async function login(req, res, next) {
         .status(401)
         .send({ message: "Email or password is incorrect" });
     }
-    res.send({ token: "TOKEN" });
+
+    const token = jwt.sign(
+      { id: user._id, name: user.name },
+      process.env.JWT_SECRET,
+      { expiresIn: "30d" }
+    );
+    res.send({ token });
   } catch (error) {
     next(error);
   }
