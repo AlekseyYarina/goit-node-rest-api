@@ -20,16 +20,20 @@ export const getAllContacts = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
+    const isFavorite = req.query.favorite === "true";
 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
-    const totalCount = await Contact.countDocuments({ ownerId: req.user.id });
+    let query = { ownerId: req.user.id };
+    if (isFavorite) {
+      query.favorite = true;
+    }
+
+    const totalCount = await Contact.countDocuments(query);
     const totalPages = Math.ceil(totalCount / limit);
 
-    const contacts = await Contact.find({ ownerId: req.user.id })
-      .skip(startIndex)
-      .limit(limit);
+    const contacts = await Contact.find(query).skip(startIndex).limit(limit);
 
     const pagination = {
       currentPage: page,
