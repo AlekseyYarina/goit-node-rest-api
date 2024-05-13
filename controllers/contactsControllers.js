@@ -6,6 +6,7 @@ const handleSuccess = (res, data, statusCode = 200) => {
 };
 
 export const getAllContacts = async (req, res, next) => {
+  console.log(req.user);
   try {
     const contacts = await Contact.find();
     res.send(contacts);
