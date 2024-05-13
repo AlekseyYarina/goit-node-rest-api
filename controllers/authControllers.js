@@ -67,4 +67,33 @@ async function logout(req, res, next) {
     next(error);
   }
 }
-export default { register, login, logout };
+
+async function updateSubscription(req, res, next) {
+  const { subscription } = req.body;
+  const allowedSubscriptions = ["starter", "pro", "business"];
+
+  if (!allowedSubscriptions.includes(subscription)) {
+    return res.status(400).send({ message: "Invalid subscription type" });
+  }
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { subscription },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    res.send({
+      message: "Subscription updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default { register, login, logout, updateSubscription };

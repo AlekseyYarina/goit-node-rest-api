@@ -9,5 +9,6 @@ const jsonParser = express.json();
 authRouter.post("/register", jsonParser, AuthController.register);
 authRouter.post("/login", jsonParser, AuthController.login);
 authRouter.get("/logout", authMiddleware, AuthController.logout);
+authRouter.patch("/users", authMiddleware, AuthController.updateSubscription);
 
 export default authRouter;
