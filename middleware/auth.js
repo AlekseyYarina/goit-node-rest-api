@@ -2,7 +2,6 @@ import jwt, { decode } from "jsonwebtoken";
 
 function auth(req, res, next) {
   const authorizationHeader = req.headers.authorization;
-  console.log(authorizationHeader);
   if (typeof authorizationHeader === "undefined") {
     return res.status(401).send({ message: "Invalid token" });
   }
@@ -16,7 +15,6 @@ function auth(req, res, next) {
     if (err) {
       return res.status(401).send({ message: "Invalid token" });
     }
-    // console.log(decode);
     req.user = {
       id: decode.id,
       email: decode.email,

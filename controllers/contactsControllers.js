@@ -6,9 +6,10 @@ const handleSuccess = (res, data, statusCode = 200) => {
 };
 
 export const getAllContacts = async (req, res, next) => {
-  console.log(req.user);
   try {
-    const contacts = await Contact.find();
+    const contacts = await Contact.find({
+      ownerId: req.user.id,
+    });
     res.send(contacts);
   } catch (error) {
     next(error);
@@ -25,6 +26,9 @@ export const getOneContact = async (req, res, next) => {
     } else {
       throw HttpError(404, "Contact not found");
     }
+    if (contact.ownerId.toString() !== req.user.id) {
+      return res.status(404).send({ message: "Contact not found" });
+    }
   } catch (error) {
     next(error);
   }
@@ -39,6 +43,9 @@ export const deleteContact = async (req, res, next) => {
     } else {
       return res.status(404).send("Contact not found");
     }
+    if (contact.ownerId.toString() !== req.user.id) {
+      return res.status(404).send({ message: "Contact not found" });
+    }
   } catch (error) {
     next(error);
   }
@@ -50,6 +57,7 @@ export const createContact = async (req, res, next) => {
     email: req.body.email,
     phone: req.body.phone,
     favorite: req.body.favorite,
+    ownerId: req.user.id,
   };
 
   try {
@@ -76,6 +84,10 @@ export const updateContact = async (req, res, next) => {
       return res.status(404).send("Contact not found");
     }
     res.status(201).send(result);
+
+    if (contact.ownerId.toString() !== req.user.id) {
+      return res.status(404).send({ message: "Contact not found" });
+    }
   } catch (error) {
     next(error);
   }
