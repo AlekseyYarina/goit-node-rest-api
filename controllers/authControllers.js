@@ -52,10 +52,19 @@ async function login(req, res, next) {
       process.env.JWT_SECRET,
       { expiresIn: "30d" }
     );
+    await User.findByIdAndUpdate(user._id, { token });
     res.send({ token });
   } catch (error) {
     next(error);
   }
 }
 
-export default { register, login };
+async function logout(req, res, next) {
+  try {
+    await User.findByIdAndUpdate(req.user.id, { token: null });
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+}
+export default { register, login, logout };
