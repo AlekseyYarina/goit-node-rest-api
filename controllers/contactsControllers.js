@@ -5,12 +5,39 @@ const handleSuccess = (res, data, statusCode = 200) => {
   res.status(statusCode).json(data);
 };
 
+// export const getAllContacts = async (req, res, next) => {
+//   try {
+//     const contacts = await Contact.find({
+//       ownerId: req.user.id,
+//     });
+//     res.send(contacts);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 export const getAllContacts = async (req, res, next) => {
   try {
-    const contacts = await Contact.find({
-      ownerId: req.user.id,
-    });
-    res.send(contacts);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const totalCount = await Contact.countDocuments({ ownerId: req.user.id });
+    const totalPages = Math.ceil(totalCount / limit);
+
+    const contacts = await Contact.find({ ownerId: req.user.id })
+      .skip(startIndex)
+      .limit(limit);
+
+    const pagination = {
+      currentPage: page,
+      totalPages: totalPages,
+      totalContacts: totalCount,
+    };
+
+    res.send({ contacts, pagination });
   } catch (error) {
     next(error);
   }
