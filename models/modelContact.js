@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export const contactSchema = mongoose.Schema(
+const contactSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -15,6 +15,10 @@ export const contactSchema = mongoose.Schema(
     favorite: {
       type: Boolean,
       default: false,
+    },
+    ownerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
     },
   },
   { versionKey: false, timestamps: true }

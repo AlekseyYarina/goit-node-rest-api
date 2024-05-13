@@ -1,8 +1,11 @@
 import express from "express";
-import contactRoutes from "./contactsRouter.js";
+import authMiddleware from "../middleware/auth.js";
+import contactsRoutes from "./contactsRouter.js";
+import authRoutes from "./authRouter.js";
 
 const routes = express.Router();
 
-routes.use("/contacts", contactRoutes);
+routes.use("/contacts", authMiddleware, contactsRoutes);
+routes.use("/auth", authRoutes);
 
 export default routes;
