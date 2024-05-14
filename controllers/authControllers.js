@@ -72,7 +72,10 @@ async function login(req, res, next) {
 
 async function logout(req, res, next) {
   try {
-    await User.findByIdAndUpdate(req.user.id, { token: null });
+    const user = await User.findByIdAndUpdate(req.user.id, { token: null });
+    if (!user) {
+      return res.status(401).send({ message: "Not authorized" });
+    }
     res.status(204).end();
   } catch (error) {
     next(error);
