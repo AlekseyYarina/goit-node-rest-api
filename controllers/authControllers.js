@@ -13,13 +13,19 @@ async function register(req, res, next) {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    await User.create({
+
+    const newUser = await User.create({
       password: passwordHash,
       email: emailInLowerCase,
       subscription,
       token,
     });
-    res.status(201).send({ message: "Registretion succesfully" });
+    res.status(201).json({
+      user: {
+        email: newUser.email,
+        subscription: newUser.subscription,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -32,16 +38,13 @@ async function login(req, res, next) {
   try {
     const user = await User.findOne({ email: emailInLowerCase });
     if (user === null) {
-      console.log("Email");
       return res
         .status(401)
         .send({ message: "Email or password is incorrect" });
     }
-    console.log(user);
-    console.log(req.body);
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch === false) {
-      console.log("Password");
       return res
         .status(401)
         .send({ message: "Email or password is incorrect" });
@@ -52,8 +55,16 @@ async function login(req, res, next) {
       process.env.JWT_SECRET,
       { expiresIn: "30d" }
     );
+
     await User.findByIdAndUpdate(user._id, { token });
-    res.send({ token });
+
+    res.status(200).json({
+      token,
+      user: {
+        email: user.email,
+        subscription: user.subscription,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -61,7 +72,10 @@ async function login(req, res, next) {
 
 async function logout(req, res, next) {
   try {
-    await User.findByIdAndUpdate(req.user.id, { token: null });
+    const user = await User.findByIdAndUpdate(req.user.id, { token: null });
+    if (!user) {
+      return res.status(401).send({ message: "Not authorized" });
+    }
     res.status(204).end();
   } catch (error) {
     next(error);
