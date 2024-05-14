@@ -51,15 +51,15 @@ export const getOneContact = async (req, res, next) => {
   const { id } = req.params;
   try {
     const contact = await Contact.findById(id);
-    if (contact !== null) {
-      handleSuccess(res, { contact });
-      res.send(id);
-    } else {
-      throw HttpError(404, "Contact not found");
-    }
-    if (contact.ownerId.toString() !== req.user.id) {
+    if (!contact) {
       return res.status(404).send({ message: "Contact not found" });
     }
+    if (contact.ownerId.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .send({ message: "Unauthorized access to contact" });
+    }
+    handleSuccess(res, { contact });
   } catch (error) {
     next(error);
   }
@@ -68,15 +68,17 @@ export const getOneContact = async (req, res, next) => {
 export const deleteContact = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const deletedContact = await Contact.findByIdAndDelete(id);
-    if (deletedContact) {
-      handleSuccess(res, { deletedContact });
-    } else {
-      return res.status(404).send("Contact not found");
-    }
-    if (contact.ownerId.toString() !== req.user.id) {
+    const contact = await Contact.findById(id);
+    if (!contact) {
       return res.status(404).send({ message: "Contact not found" });
     }
+    if (contact.ownerId.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .send({ message: "Unauthorized access to contact" });
+    }
+    const deletedContact = await Contact.findByIdAndDelete(id);
+    handleSuccess(res, { deletedContact });
   } catch (error) {
     next(error);
   }
@@ -101,24 +103,23 @@ export const createContact = async (req, res, next) => {
 
 export const updateContact = async (req, res, next) => {
   const { id } = req.params;
-  const contact = {
-    name: req.body.name,
-    email: req.body.email,
-    phone: req.body.phone,
-    favorite: req.body.favorite,
-  };
+  const { name, email, phone, favorite } = req.body;
   try {
-    const result = await Contact.findByIdAndUpdate(id, contact, {
-      new: true,
-    });
-    if (result === null) {
-      return res.status(404).send("Contact not found");
-    }
-    res.status(201).send(result);
-
-    if (contact.ownerId.toString() !== req.user.id) {
+    const contact = await Contact.findById(id);
+    if (!contact) {
       return res.status(404).send({ message: "Contact not found" });
     }
+    if (contact.ownerId.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .send({ message: "Unauthorized access to contact" });
+    }
+    const updatedContact = await Contact.findByIdAndUpdate(
+      id,
+      { name, email, phone, favorite },
+      { new: true }
+    );
+    handleSuccess(res, { updatedContact });
   } catch (error) {
     next(error);
   }
@@ -126,17 +127,23 @@ export const updateContact = async (req, res, next) => {
 
 export const updateStatusContact = async (req, res, next) => {
   const { id } = req.params;
-  const contactStatus = {
-    favorite: req.body.favorite,
-  };
+  const { favorite } = req.body;
   try {
-    const result = await Contact.findByIdAndUpdate(id, contactStatus, {
-      new: true,
-    });
-    if (result === null) {
-      return res.status(404).send("Contact not found");
+    const contact = await Contact.findById(id);
+    if (!contact) {
+      return res.status(404).send({ message: "Contact not found" });
     }
-    res.status(201).send(result);
+    if (contact.ownerId.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .send({ message: "Unauthorized access to contact" });
+    }
+    const updatedContact = await Contact.findByIdAndUpdate(
+      id,
+      { favorite },
+      { new: true }
+    );
+    handleSuccess(res, { updatedContact });
   } catch (error) {
     next(error);
   }
