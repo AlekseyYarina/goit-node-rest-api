@@ -13,13 +13,19 @@ async function register(req, res, next) {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    await User.create({
+
+    const newUser = await User.create({
       password: passwordHash,
       email: emailInLowerCase,
       subscription,
       token,
     });
-    res.status(201).send({ message: "Registretion succesfully" });
+    res.status(201).json({
+      user: {
+        email: newUser.email,
+        subscription: newUser.subscription,
+      },
+    });
   } catch (error) {
     next(error);
   }
