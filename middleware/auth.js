@@ -1,5 +1,5 @@
 import jwt, { decode } from "jsonwebtoken";
-import User from "../middleware/auth.js";
+import User from "../models/modelUser.js";
 
 function auth(req, res, next) {
   const authorizationHeader = req.headers.authorization;
@@ -18,7 +18,7 @@ function auth(req, res, next) {
     }
 
     try {
-      const user = await User.finedById(decode.id);
+      const user = await User.findById(decode.id);
 
       if (user === null) {
         res.status(401).send({ message: "Invalid token" });
