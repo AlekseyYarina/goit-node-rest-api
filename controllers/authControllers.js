@@ -1,29 +1,40 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
 
 import User from "../models/modelUser.js";
 
 async function register(req, res, next) {
   const { password, email, subscription, token } = req.body;
   const emailInLowerCase = email.toLowerCase();
+
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: emailInLowerCase });
     if (user !== null) {
-      return res.status(409).send({ message: "User allready registered" });
+      return res.status(409).send({ message: "User already registered" });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
+
+    const avatarUrl = gravatar.url(emailInLowerCase, {
+      s: "200",
+      r: "pg",
+      d: "mm",
+    });
 
     const newUser = await User.create({
       password: passwordHash,
       email: emailInLowerCase,
       subscription,
       token,
+      avatarURL: avatarUrl,
     });
+
     res.status(201).json({
       user: {
         email: newUser.email,
         subscription: newUser.subscription,
+        avatarURL: newUser.avatarURL,
       },
     });
   } catch (error) {
