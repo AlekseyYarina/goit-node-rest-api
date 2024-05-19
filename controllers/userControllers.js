@@ -1,5 +1,6 @@
 import * as fs from "node:fs/promises";
 import path from "node:path";
+import Jimp from "jimp";
 
 import User from "../models/modelUser.js";
 
@@ -19,7 +20,22 @@ async function uploadAvatar(req, res, next) {
     if (user === null) {
       return res.status(404).send({ message: "User not found" });
     }
-    res.send(user);
+
+    const avatarPath = path.resolve("public/avatars", req.file.filename);
+    const avatar = await Jimp.read(avatarPath);
+    await avatar.resize(250, 250).writeAsync(avatarPath);
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { avatarURL: req.file.filename },
+      { new: true }
+    );
+
+    if (updatedUser === null) {
+      return res.status(404).send({ message: "Пользователь не найден" });
+    }
+
+    res.send(updatedUser);
   } catch (error) {
     next(error);
   }
