@@ -10,7 +10,6 @@ const storage = multer.diskStorage({
     const extname = path.extname(file.originalname);
     const basename = path.basename(file.originalname, extname);
     const syffix = crypto.randomUUID();
-    console.log(`${basename}-${syffix}${extname}`);
     cb(null, `${basename}-${syffix}${extname}`);
   },
 });

@@ -10,4 +10,6 @@ router.patch(
   UserController.uploadAvatar
 );
 
+router.get("/avatar", UserController.getAvatar);
+
 export default router;
