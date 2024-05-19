@@ -17,7 +17,7 @@ async function register(req, res, next) {
     const passwordHash = await bcrypt.hash(password, 10);
 
     const avatarUrl = gravatar.url(emailInLowerCase, {
-      s: "200",
+      s: "250",
       r: "pg",
       d: "mm",
     });
