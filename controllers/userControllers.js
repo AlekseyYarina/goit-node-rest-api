@@ -10,14 +10,15 @@ async function uploadAvatar(req, res, next) {
       return res.status(400).send({ message: "File not transferred" });
     }
 
-    await fs.rename(
-      req.file.path,
-      path.resolve("public/avatars", req.file.filename)
-    );
+    const avatarFilename = req.file.filename;
+    const avatarURL = `/avatars/${avatarFilename}`;
+    const avatarPath = path.resolve("public/avatars", avatarFilename);
+
+    await fs.rename(req.file.path, avatarPath);
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { avatarURL: req.file.filename },
+      { avatarURL },
       { new: true }
     );
 
@@ -25,21 +26,10 @@ async function uploadAvatar(req, res, next) {
       return res.status(404).send({ message: "User not found" });
     }
 
-    const avatarPath = path.resolve("public/avatars", req.file.filename);
     const avatar = await Jimp.read(avatarPath);
     await avatar.resize(250, 250).writeAsync(avatarPath);
 
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
-      { avatarURL: req.file.filename },
-      { new: true }
-    );
-
-    if (updatedUser === null) {
-      return res.status(404).send({ message: "Пользователь не найден" });
-    }
-
-    res.send(updatedUser);
+    res.send(user);
   } catch (error) {
     next(error);
   }
@@ -54,7 +44,7 @@ async function getAvatar(req, res, next) {
     if (user.avatarURL === null) {
       return res.status(404).send({ message: "Avatar not found" });
     }
-    res.sendFile(path.resolve("public/avatars", user.avatarURL));
+    res.sendFile(path.resolve("public", user.avatarURL));
   } catch (error) {
     next(error);
   }

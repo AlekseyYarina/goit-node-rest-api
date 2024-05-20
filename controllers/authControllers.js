@@ -16,19 +16,26 @@ async function register(req, res, next) {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const avatarUrl = gravatar.url(emailInLowerCase, {
+    const gravatarUrl = gravatar.url(emailInLowerCase, {
       s: "250",
       r: "pg",
       d: "mm",
     });
+
+    const avatarFilename = `${new Date().getTime()}-${emailInLowerCase}.jpg`;
+    const avatarURL = `/avatars/${avatarFilename}`;
 
     const newUser = await User.create({
       password: passwordHash,
       email: emailInLowerCase,
       subscription,
       token,
-      avatarURL: avatarUrl,
+      avatarURL,
     });
+
+    const avatarPath = path.resolve("public/avatars", avatarFilename);
+    const avatarImage = await Jimp.read(gravatarUrl);
+    await avatarImage.resize(250, 250).writeAsync(avatarPath);
 
     res.status(201).json({
       user: {
