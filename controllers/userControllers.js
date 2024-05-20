@@ -6,6 +6,10 @@ import User from "../models/modelUser.js";
 
 async function uploadAvatar(req, res, next) {
   try {
+    if (!req.file) {
+      return res.status(400).send({ message: "File not transferred" });
+    }
+
     await fs.rename(
       req.file.path,
       path.resolve("public/avatars", req.file.filename)
