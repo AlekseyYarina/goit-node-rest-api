@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import gravatar from "gravatar";
-
 import User from "../models/modelUser.js";
 
 async function register(req, res, next) {
@@ -22,8 +21,7 @@ async function register(req, res, next) {
       d: "mm",
     });
 
-    const avatarFilename = `${new Date().getTime()}-${emailInLowerCase}.jpg`;
-    const avatarURL = `/avatars/${avatarFilename}`;
+    const avatarURL = gravatarUrl;
 
     const newUser = await User.create({
       password: passwordHash,
@@ -32,10 +30,6 @@ async function register(req, res, next) {
       token,
       avatarURL,
     });
-
-    const avatarPath = path.resolve("public/avatars", avatarFilename);
-    const avatarImage = await Jimp.read(gravatarUrl);
-    await avatarImage.resize(250, 250).writeAsync(avatarPath);
 
     res.status(201).json({
       user: {
