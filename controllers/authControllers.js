@@ -1,7 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import gravatar from "gravatar";
+import crypto from "node:crypto";
+
 import User from "../models/modelUser.js";
+import mail from "../mail.js";
 
 async function register(req, res, next) {
   const { password, email, subscription, token } = req.body;
@@ -22,6 +25,7 @@ async function register(req, res, next) {
     });
 
     const avatarURL = gravatarUrl;
+    const vetifyToken = crypto.randomUUID();
 
     const newUser = await User.create({
       password: passwordHash,
@@ -29,6 +33,15 @@ async function register(req, res, next) {
       subscription,
       token,
       avatarURL,
+      vetifyToken,
+    });
+
+    mail.sendMail({
+      to: emailInLowerCase,
+      from: "aleksey.yarina@gmail.com",
+      subject: "Welcome to our app!",
+      html: `To confirm your email please click on the <a href="http://localhost:3000/api/user/verify${vetifyToken}">link</a>`,
+      text: `To confirm your email please popen the link http://localhost:3000/api/user/verify${vetifyToken}`,
     });
 
     res.status(201).json({
