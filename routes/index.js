@@ -8,6 +8,6 @@ const routes = express.Router();
 
 routes.use("/contacts", authMiddleware, contactsRoutes);
 routes.use("/auth", authRoutes);
-routes.use("/users", userRoutes); //delete authMiddleware,
+routes.use("/users", userRoutes);
 
 export default routes;
