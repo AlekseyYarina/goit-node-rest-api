@@ -3,7 +3,6 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import path from "node:path";
-// import nodemailer from "nodemailer";
 
 import routes from "./routes/index.js";
 import "./db/db.js";
