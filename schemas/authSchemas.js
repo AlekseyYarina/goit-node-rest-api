@@ -28,3 +28,20 @@ export const updateSubscriptionSchema = Joi.object({
       "any.only": "Invalid subscription type.",
     }),
 });
+
+export const resendVerificationEmailSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    "any.required": "missing required field email",
+    "string.email": "invalid email format",
+  }),
+});
+
+export default function validateBody(schema) {
+  return (req, res, next) => {
+    const { error } = schema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+    next();
+  };
+}
