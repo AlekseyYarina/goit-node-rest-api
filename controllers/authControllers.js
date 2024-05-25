@@ -40,8 +40,8 @@ async function register(req, res, next) {
       to: emailInLowerCase,
       from: "aleksey.yarina@gmail.com",
       subject: "Welcome to our app!",
-      html: `To confirm your email please click on the <a href="http://localhost:3000/api/user/verify${verificationToken}">link</a>`,
-      text: `To confirm your email please popen the link http://localhost:3000/api/user/verify${verificationToken}`,
+      html: `To confirm your email please click on the <a href="http://localhost:3000/api/users/verify/${verificationToken}">link</a>`,
+      text: `To confirm your email please popen the link http://localhost:3000/api/users/verify/${verificationToken}`,
     });
 
     res.status(201).json({
@@ -73,6 +73,10 @@ async function login(req, res, next) {
       return res
         .status(401)
         .send({ message: "Email or password is incorrect" });
+    }
+
+    if (user.verify === false) {
+      return res.status(401).send({ message: "Please verify your email" });
     }
 
     const token = jwt.sign(

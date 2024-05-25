@@ -50,4 +50,25 @@ async function getAvatar(req, res, next) {
   }
 }
 
-export default { uploadAvatar, getAvatar };
+async function verify(req, res, next) {
+  const { verificationToken } = req.params;
+  console.log(verificationToken);
+  console.log(req.params);
+  try {
+    const user = await User.findOneAndUpdate(
+      { verificationToken },
+      { verify: true, verificationToken: null },
+      { new: true }
+    );
+
+    if (user === null) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    res.status(200).send({ message: "Email confirm successfully" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default { uploadAvatar, getAvatar, verify };
