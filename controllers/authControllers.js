@@ -25,7 +25,7 @@ async function register(req, res, next) {
     });
 
     const avatarURL = gravatarUrl;
-    const vetifyToken = crypto.randomUUID();
+    const verificationToken = crypto.randomUUID();
 
     const newUser = await User.create({
       password: passwordHash,
@@ -33,15 +33,15 @@ async function register(req, res, next) {
       subscription,
       token,
       avatarURL,
-      vetifyToken,
+      verificationToken,
     });
 
     mail.sendMail({
       to: emailInLowerCase,
       from: "aleksey.yarina@gmail.com",
       subject: "Welcome to our app!",
-      html: `To confirm your email please click on the <a href="http://localhost:3000/api/user/verify${vetifyToken}">link</a>`,
-      text: `To confirm your email please popen the link http://localhost:3000/api/user/verify${vetifyToken}`,
+      html: `To confirm your email please click on the <a href="http://localhost:3000/api/user/verify${verificationToken}">link</a>`,
+      text: `To confirm your email please popen the link http://localhost:3000/api/user/verify${verificationToken}`,
     });
 
     res.status(201).json({
