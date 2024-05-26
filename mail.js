@@ -13,4 +13,17 @@ function sendMail(message) {
   return transport.sendMail(message);
 }
 
-export default { sendMail };
+function createVerificationEmail(to, verificationToken) {
+  const senderEmail = process.env.SENDER_EMAIL;
+  const baseUrl = process.env.BASE_URL;
+
+  return {
+    to: to.toLowerCase(),
+    from: senderEmail,
+    subject: "Email Verification",
+    html: `To confirm your email please click on the <a href="${baseUrl}/api/users/verify/${verificationToken}">link</a>`,
+    text: `To confirm your email please open the link ${baseUrl}/api/users/verify/${verificationToken}`,
+  };
+}
+
+export default { sendMail, createVerificationEmail };
