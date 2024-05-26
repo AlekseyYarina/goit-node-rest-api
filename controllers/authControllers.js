@@ -36,13 +36,11 @@ async function register(req, res, next) {
       verificationToken,
     });
 
-    mail.sendMail({
-      to: emailInLowerCase,
-      from: "aleksey.yarina@gmail.com",
-      subject: "Welcome to our app!",
-      html: `To confirm your email please click on the <a href="http://localhost:3000/api/users/verify/${verificationToken}">link</a>`,
-      text: `To confirm your email please popen the link http://localhost:3000/api/users/verify/${verificationToken}`,
-    });
+    const emailMessage = mail.createVerificationEmail(
+      emailInLowerCase,
+      verificationToken
+    );
+    mail.sendMail(emailMessage);
 
     res.status(201).json({
       user: {

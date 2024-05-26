@@ -3,6 +3,7 @@ import path from "node:path";
 import Jimp from "jimp";
 
 import User from "../models/modelUser.js";
+import mail from "../mail.js";
 
 async function uploadAvatar(req, res, next) {
   try {
@@ -98,13 +99,11 @@ async function resendVerificationEmail(req, res, next) {
       await user.save();
     }
 
-    mail.sendMail({
-      to: emailInLowerCase,
-      from: "aleksey.yarina@gmail.com",
-      subject: "Email Verification",
-      html: `To confirm your email please click on the <a href="http://localhost:3000/api/users/verify/${verificationToken}">link</a>`,
-      text: `To confirm your email please open the link http://localhost:3000/api/users/verify/${verificationToken}`,
-    });
+    const emailMessage = mail.createVerificationEmail(
+      emailInLowerCase,
+      verificationToken
+    );
+    mail.sendMail(emailMessage);
 
     res.status(200).send({ message: "Verification email sent" });
   } catch (error) {
